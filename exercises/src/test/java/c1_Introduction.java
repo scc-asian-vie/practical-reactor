@@ -1,3 +1,9 @@
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Flow.Subscriber;
+import java.util.concurrent.Flow.Subscription;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -8,6 +14,7 @@ import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static com.fasterxml.jackson.databind.util.ClassUtil.classOf;
 import static java.util.Collections.emptyList;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -38,10 +45,10 @@ public class c1_Introduction extends IntroductionBase {
      * Retrieve result from this Mono by blocking indefinitely or until a next signal is received.
      */
     @Test
-    public void hello_world() {
+    public void hello_world() throws ExecutionException, InterruptedException {
         Mono<String> serviceResult = hello_world_service();
 
-        String result = null; //todo: change this line only
+        String result = serviceResult.block(); //todo: change this line only
 
         assertEquals("Hello World!", result);
     }
@@ -55,7 +62,7 @@ public class c1_Introduction extends IntroductionBase {
         Exception exception = assertThrows(IllegalStateException.class, () -> {
             Mono<String> serviceResult = unresponsiveService();
 
-            String result = null; //todo: change this line only
+            String result = serviceResult.block(Duration.ofSeconds(1L)); //todo: change this line only
         });
 
         String expectedMessage = "Timeout on blocking read for 1";
@@ -72,7 +79,7 @@ public class c1_Introduction extends IntroductionBase {
     public void empty_service() {
         Mono<String> serviceResult = emptyService();
 
-        Optional<String> optionalServiceResult = null; //todo: change this line only
+        Optional<String> optionalServiceResult = serviceResult.blockOptional(); //todo: change this line only
 
         assertTrue(optionalServiceResult.isEmpty());
         assertTrue(emptyServiceIsCalled.get());
@@ -89,7 +96,7 @@ public class c1_Introduction extends IntroductionBase {
     public void multi_result_service() {
         Flux<String> serviceResult = multiResultService();
 
-        String result = serviceResult.toString(); //todo: change this line only
+        String result = serviceResult.blockFirst(); //todo: change this line only
 
         assertEquals("valid result", result);
     }
@@ -102,8 +109,9 @@ public class c1_Introduction extends IntroductionBase {
     @Test
     public void fortune_top_five() {
         Flux<String> serviceResult = fortuneTop5();
-
-        List<String> results = emptyList(); //todo: change this line only
+//        List<String> results = new ArrayList<>();
+//        serviceResult.subscribe(results::add);
+        List<String> results = serviceResult.collectList().block(); //todo: change this line only
 
         assertEquals(Arrays.asList("Walmart", "Amazon", "Apple", "CVS Health", "UnitedHealth Group"), results);
         assertTrue(fortuneTop5ServiceIsCalled.get());
@@ -127,7 +135,7 @@ public class c1_Introduction extends IntroductionBase {
         Flux<String> serviceResult = fortuneTop5();
 
         serviceResult
-                .doOnNext(companyList::add)
+                .doOnNext(companyList::add).subscribe()
         //todo: add an operator here, don't use any blocking operator!
         ;
 
@@ -151,7 +159,11 @@ public class c1_Introduction extends IntroductionBase {
         AtomicReference<Boolean> serviceCallCompleted = new AtomicReference<>(false);
         CopyOnWriteArrayList<String> companyList = new CopyOnWriteArrayList<>();
 
-        fortuneTop5()
+        fortuneTop5().subscribe(
+            companyList::add,
+            e->{},
+            ()-> serviceCallCompleted.set(true)
+        )
         //todo: change this line only
         ;
 
