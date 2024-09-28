@@ -31,12 +31,21 @@ public class DebugOutputSingleProcess {
    * we should implement the former approach only in critical cases.
    * Reactor also provides a way to enable the debug mode on single crucial
    * processes, which is less memory-consuming.
+   * -
+   * We should implement the checkpoint method towards the end of the
+   * reactive chain. Otherwise, the operator won’t be able to observe errors occurring
+   * downstream.
+   * -
+   * By calling the log method in our reactive
+   * chain, the application will log each element in the flow with the state that
+   * it has at that stage.
    */
   public static void main(String[] args) throws InterruptedException {
     logger.info("Do the debugging");
     // do err handler on Publisher
     STRING.publishOn(s1)
         .map(DebugProcessMultiThread::concatName)
+        .log()
         .map(DebugProcessMultiThread::subString)
         .doOnError(err -> {
           s1.dispose();
