@@ -2,19 +2,15 @@ package srg.debug;
 
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Hooks;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 import reactor.util.Logger;
 import reactor.util.Loggers;
 
 /**
- * The Reactor library provides a Hooks class that lets us configure the behavior
- * of Flux and Mono operators.
- * By simply adding the following statement, our application will instrument
- * the calls to the publishers’ methods, wrap the construction of the operator,
- * and capture a stack trace:
- * Hooks.onOperatorDebug();
+ * Executing Operators on Different Threads
+ * other aspect to keep in mind is that the assembly trace is generated
+ * properly even if there are different threads operating on the stream.
  */
 public class DebugProcessMultiThread {
   private static final Logger logger = Loggers.getLogger(DebugProcess.class);
@@ -33,6 +29,12 @@ public class DebugProcessMultiThread {
     logger.info("Result is: {}", src);
   }
 
+  /**
+   * if we check the logs, we’ll appreciate that in this case, the first section
+   * might change a little bit, but the last two remain fairly the same.
+   * The first part is the thread stack trace; therefore, it’ll show only the
+   * operations carried out by a particular thread.
+   */
   public static void main(String[] args) throws InterruptedException {
     logger.info("Do the debugging");
     // do err handler on Publisher
