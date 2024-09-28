@@ -10,6 +10,8 @@ import reactor.core.publisher.Flux;
 /**
  * Backpressure is when a downstream can tell an upstream to send it less
  * data in order to prevent it from being overwhelmed.
+ * -
+ * Notice that this also run on main thread only
  */
 public class BackPressure {
 

@@ -2,6 +2,9 @@ package srg;
 
 import reactor.core.publisher.Flux;
 
+/**
+ * * Notice that this also run on main thread only
+ */
 public class StreamOperation {
   private static final Flux<Integer> INTEGER = Flux.just(1,2,3,4,5);
   private static final Flux<String> STRING = Flux.just("2", "4", "8", "16", "32");

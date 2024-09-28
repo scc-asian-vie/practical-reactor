@@ -13,6 +13,8 @@ import reactor.core.publisher.Mono;
  * Streams are a pull model. In a reactive approach, events are pushed to the
  * subscribers as they come in.
  * The data won’t start flowing until we subscribe
+ * -
+ * Notice that this also run on main thread only
  */
 public class ProductStaticStreamData {
   // Simple static Flux
