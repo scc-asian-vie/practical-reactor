@@ -1,5 +1,6 @@
 package srg;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -15,13 +16,13 @@ import reactor.core.scheduler.Schedulers;
  * many implementations are provided for us. Let’s try subscribing to a different
  * thread than main:
  */
-public class ConcurrencyRunnable2 {
+public class ConcurrencyRunnable3 {
   private static final ExecutorService executor = Executors.newFixedThreadPool(4);
   private static final Scheduler scheduler = Schedulers.fromExecutor(executor);
   private static final Flux<Integer> CON = Flux.just(1,2,3,4,5,6,7,8);
 
   static Runnable runner = () -> {
-    System.out.println(Thread.currentThread().getName());
+    System.out.printf("%s - Runner: %s\n", Instant.now(), Thread.currentThread().getName());
 
   };
 
@@ -39,17 +40,20 @@ public class ConcurrencyRunnable2 {
     /* This run on main thread */
     elements.stream().map(i -> applyFunc(i,
         String::valueOf
-    )).forEach(System.out::println);
+    )).forEach(item -> {
+      scheduler.schedule(runner);
+      System.out.printf("%s - %s : %s\n",Instant.now(), Thread.currentThread().getName(), item);
+    });
 
     /* Scheduler no more be used */
     scheduler.dispose();
   }
 
-  static String applyFunc(Integer item, Transformer2<Integer, String> transformer) {
+  static String applyFunc(Integer item, Transformer3<Integer, String> transformer) {
     return transformer.transform(item);
   }
 }
 
-interface Transformer2<T,V> {
+interface Transformer3<T,V> {
   V transform(T i);
 }

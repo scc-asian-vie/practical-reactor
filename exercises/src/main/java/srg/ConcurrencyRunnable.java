@@ -37,8 +37,6 @@ public class ConcurrencyRunnable {
     Thread.sleep(100);
 
     /* This run on main thread */
-    //elements.forEach(i -> System.out.printf("Run on %s: %d\n", Thread.currentThread().getName(),i));
-
     elements.forEach(i -> applyFunc(i,
         System.out::println
     ));
