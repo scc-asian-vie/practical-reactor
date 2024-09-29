@@ -1,13 +1,13 @@
-package controller;
+package webflux.controller;
 
 
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import webflux.controller.SimpleController;
+import reactor.core.publisher.Flux;
+import reactor.test.StepVerifier;
 import webflux.model.Employee;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,7 +17,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import webflux.repository.EmployeeRepository;
 import webflux.service.EmployeeService;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,18 +40,32 @@ class SimpleControllerTest {
     }
 
     @Test
-    public void testGetEmployeeById() {
+    void testGetEmployeeById() {
       // Given
 
       // When
-//      doReturn(Mono.just(employee)).when(employeeService).findById("1");
-      Mono<Employee> employeeMono = client.get()
-          .uri("/employee/1")
-          .retrieve()
-          .bodyToMono(Employee.class);
+      doReturn(Mono.just(employee)).when(employeeService).findById("1");
+      Mono<Employee> employeeMono = simpleController.getEmployeeById("1");
+      //      Mono<Employee> employeeMono = client.get()
+      //          .uri("/employee/1")
+      //          .retrieve()
+      //          .bodyToMono(Employee.class);
 
       // Then
-      employeeMono.subscribe(System.out::println);
+      StepVerifier.create(employeeMono).expectNext(employee).verifyComplete();
+
+    }
+
+    @Test
+    void testGetEmployees() {
+      // Given
+
+      // When
+      doReturn(Flux.just(employee)).when(employeeService).findAll();
+      Flux<Employee> employeeFlux = simpleController.getEmployee();
+
+      // Then
+      StepVerifier.create(employeeFlux).expectNext(employee).verifyComplete();
     }
 
   }

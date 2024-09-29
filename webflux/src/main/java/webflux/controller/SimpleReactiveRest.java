@@ -10,9 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.config.web.server.ServerHttpSecurity.CsrfSpec;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.util.Logger;
+import reactor.util.Loggers;
 import webflux.function.RouterFunction;
 import webflux.model.Employee;
 import webflux.service.EmployeeService;
@@ -27,7 +28,7 @@ import webflux.service.EmployeeService;
  */
 @Configuration
 public class SimpleReactiveRest {
-
+  private static final Logger log = Loggers.getLogger(SimpleReactiveRest.class);
   private final EmployeeService employeeService;
 
   @Autowired
@@ -48,8 +49,9 @@ public class SimpleReactiveRest {
    * employees/{id} to employeeService.findById(id).
    */
   @Bean
-  RouterFunction<ServerResponse> getEmployeeByIdRoute() {
+  public RouterFunction<ServerResponse> getEmployeeByIdRoute() {
     return route(GET("/employees/{id}"), request -> {
+      log.info("Request: {} for EmployeeId({})",request, request.pathVariable("id"));
       String id = request.pathVariable("id");
       return ok().body(employeeService.findById(id), Employee.class);
     });
@@ -59,7 +61,7 @@ public class SimpleReactiveRest {
    * for publishing a collection resource, we’ll add another route
    */
   @Bean
-  RouterFunction<ServerResponse> getAllEmployeeRoute() {
+  public RouterFunction<ServerResponse> getAllEmployeeRoute() {
     return route(GET("/employees"),
         req -> ok().body(employeeService.findAll(), Employee.class)
         );
@@ -69,7 +71,7 @@ public class SimpleReactiveRest {
    *
    */
   @Bean
-  RouterFunction<ServerResponse> updateEmployeeRoute() {
+  public RouterFunction<ServerResponse> updateEmployeeRoute() {
     return route(PUT("/employees"),
         req -> req.body(toMono(Employee.class))
             .doOnNext(employeeService::updateEmployee)
@@ -77,12 +79,12 @@ public class SimpleReactiveRest {
         );
   }
 
-  @Bean
-  public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-    http.csrf(CsrfSpec::disable)
-        .authorizeExchange(
-            exchanges -> exchanges.anyExchange().permitAll()
-        );
-    return http.build();
-  }
+  //  @Bean
+  //  public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+  //    http.csrf().disable()
+  //        .authorizeExchange(
+  //            exchanges -> exchanges.anyExchange().permitAll()
+  //        );
+  //    return http.build();
+  //  }
 }

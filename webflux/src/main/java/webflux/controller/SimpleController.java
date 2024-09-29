@@ -33,16 +33,18 @@ public class SimpleController {
    * most one employee
    */
   @GetMapping("/{id}")
-  private Mono<Employee> getEmployeeById(@PathVariable String id) {
+  public Mono<Employee> getEmployeeById(@PathVariable String id) {
+    log.info("Request GET for EmployeeId({})", id);
     return employeeService.findById(id);
   }
 
   /**
    * For the collection resource, we’ll use a Flux of type Employee since that’s
-   * the publisher for 0..n elements.
+   * the publisher for 0...n elements.
    */
   @GetMapping
-  private Flux<Employee> getEmployee() {
+  public Flux<Employee> getEmployee() {
+    log.info("Request GET for all Employees");
     return employeeService.findAll();
   }
 }
