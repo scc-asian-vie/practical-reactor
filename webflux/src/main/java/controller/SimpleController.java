@@ -31,7 +31,7 @@ public class SimpleController {
    */
   @GetMapping("/{id}")
   private Mono<Employee> getEmployeeById(@PathVariable String id) {
-    return employeeRepository.findEmployeeById(id);
+    return employeeRepository.findById(id);
   }
 
   /**
@@ -40,6 +40,6 @@ public class SimpleController {
    */
   @GetMapping
   private Flux<Employee> getEmployee() {
-    return employeeRepository.findEmployees();
+    return employeeRepository.findAll();
   }
 }
