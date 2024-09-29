@@ -1,0 +1,10 @@
+spring:
+  r2dbc:
+    url: r2dbc:h2:file:///./testdb
+    pool:
+      enabled: true
+      initial-size: 5
+      max-size: 10
+logging:
+  level:
+    org.springframework.r2dbc: DEBUG

@@ -1,6 +1,7 @@
-package controller;
+package webflux.controller;
 
-import model.Employee;
+import org.springframework.beans.factory.annotation.Autowired;
+import webflux.model.Employee;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,7 +10,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.Logger;
 import reactor.util.Loggers;
-import repository.EmployeeRepository;
+import webflux.repository.EmployeeRepository;
+import webflux.service.EmployeeService;
 
 /**
  * To begin with, on the server, we’ll create an annotated controller that
@@ -19,10 +21,11 @@ import repository.EmployeeRepository;
 @RequestMapping("/employee")
 public class SimpleController {
   private static final Logger log = Loggers.getLogger(SimpleController.class);
-  private final EmployeeRepository employeeRepository;
+  private final EmployeeService employeeService;
 
-  public SimpleController(EmployeeRepository employeeRepository) {
-    this.employeeRepository = employeeRepository;
+  @Autowired
+  public SimpleController(EmployeeService employeeService) {
+    this.employeeService = employeeService;
   }
 
   /**
@@ -31,7 +34,7 @@ public class SimpleController {
    */
   @GetMapping("/{id}")
   private Mono<Employee> getEmployeeById(@PathVariable String id) {
-    return employeeRepository.findById(id);
+    return employeeService.findById(id);
   }
 
   /**
@@ -40,6 +43,6 @@ public class SimpleController {
    */
   @GetMapping
   private Flux<Employee> getEmployee() {
-    return employeeRepository.findAll();
+    return employeeService.findAll();
   }
 }

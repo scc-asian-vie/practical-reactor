@@ -1,4 +1,4 @@
-package utils;
+package webflux.utils;
 
 import lombok.Getter;
 import org.springframework.web.reactive.function.client.WebClient;

@@ -1,10 +1,14 @@
 package controller;
 
 
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
-import model.Employee;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import webflux.controller.SimpleController;
+import webflux.model.Employee;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -13,15 +17,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import repository.EmployeeRepository;
+import webflux.repository.EmployeeRepository;
+import webflux.service.EmployeeService;
 
+@ExtendWith(MockitoExtension.class)
 class SimpleControllerTest {
 
   @InjectMocks
   private SimpleController simpleController;
 
   @Mock
-  EmployeeRepository employeeRepository;
+  EmployeeService employeeService;
 
   @DisplayName("Given a SimpleController")
   @Nested
@@ -39,7 +45,7 @@ class SimpleControllerTest {
       // Given
 
       // When
-      when(employeeRepository.findById("1")).thenReturn(Mono.just(employee));
+//      doReturn(Mono.just(employee)).when(employeeService).findById("1");
       Mono<Employee> employeeMono = client.get()
           .uri("/employee/1")
           .retrieve()

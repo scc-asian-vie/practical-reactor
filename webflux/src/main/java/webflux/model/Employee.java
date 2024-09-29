@@ -1,4 +1,4 @@
-package model;
+package webflux.model;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
 
 @Getter
 @Setter
@@ -14,7 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Builder
 public class Employee {
-
+  @Id
   private BigDecimal id;
   private String firstName;
   private String lastName;
