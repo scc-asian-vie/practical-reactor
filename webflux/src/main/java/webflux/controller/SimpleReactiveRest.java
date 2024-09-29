@@ -50,9 +50,9 @@ public class SimpleReactiveRest {
    */
   @Bean
   public RouterFunction<ServerResponse> getEmployeeByIdRoute() {
-    return route(GET("/employees/{id}"), request -> {
-      log.info("Request: {} for EmployeeId({})",request, request.pathVariable("id"));
-      String id = request.pathVariable("id");
+    return route(GET("/employees/{id}"), req -> {
+      log.info("Request: {} for EmployeeId({})",req, req.pathVariable("id"));
+      String id = req.pathVariable("id");
       return ok().body(employeeService.findById(id), Employee.class);
     });
   }
