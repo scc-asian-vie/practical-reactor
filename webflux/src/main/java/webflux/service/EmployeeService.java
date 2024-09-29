@@ -1,5 +1,6 @@
 package webflux.service;
 
+import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -22,6 +23,11 @@ public class EmployeeService {
 
   public Flux<Employee> findAll() {
     return repository.findAll();
+  }
+
+  public void updateEmployee(Employee employee) {
+    Objects.requireNonNull(employee, "employee is Null");
+    repository.save(Objects.requireNonNull(employee));
   }
 
 
